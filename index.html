@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      textarea {
+        width: 600px;
+        height: 1200px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>plist を貼り付けくん</h1>
+    <p>
+      tsv を Google SpreadSheet とかに貼り付けると、いい感じの表になります。
+    </p>
+    <p>
+      tsv
+      をコピーしたら、一回タブを閉じて開き直してください。（またplistをいじろうとすると固まります）
+    </p>
+    <textarea
+      class="input"
+      placeholder="plist のテキスト貼り付けてください"
+    ></textarea>
+    <textarea
+      class="output"
+      placeholder="クリックするとtsvが表示されます"
+      readonly
+    ></textarea>
+    <script src="plist-parse.js"></script>
+    <script>
+      const input = document.querySelector(".input");
+      const output = document.querySelector(".output");
+      input.addEventListener("change", (e) => {
+        const dict = plist.parse(e.target.value);
+        const data = [];
+        Object.keys(dict).map((key) => {
+          if (key.split("/").length === 3) {
+            data.push({
+              name: key.split("/")[2],
+              length: dict[key].length,
+            });
+          }
+        });
+        const lines = data.map((v) => `${v.name}\t${v.length}`);
+        output.value = lines.join("\n");
+      });
+    </script>
+  </body>
+</html>
